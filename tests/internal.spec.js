@@ -169,6 +169,28 @@ describe('Can generate', () => {
     expect(toWrite).to.include(randomWithToken);
     expect(toWrite).to.include(customRegistryWithScope);
   });
+  it('file with custom registry (with trailing slash) and custom scope', () => {
+    const givenRegistry = testData.registry + '/';
+
+    // If registry is given with a trailing slash - preserve it.
+    // Does matter for Artifactory
+    const expectedRegistryInScopeLine = customRegistryWithScope + '/';
+
+    const args = ncl.processArguments(
+      testData.username,
+      testData.password,
+      testData.email,
+      givenRegistry,
+      testData.scope,
+    );
+    const toWrite = ncl.generateFileContents(args, '', testData.response);
+    expect(toWrite).to.have.length(2);
+
+    // Note: if this one fails it means there's a double trailing slash in a
+    // line containing _authToken
+    expect(toWrite).to.include(randomWithToken);
+    expect(toWrite).to.include(expectedRegistryInScopeLine);
+  });
 });
 
 describe('Can append to', () => {
